@@ -1,0 +1,93 @@
+<html>
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+    <head>
+
+        <meta charset="utf-8">
+        <title>register</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="qiang" >
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="./assets/css/reset.css">
+        <!--<link rel="stylesheet" href="./assets/css/supersized.css">-->
+        <link rel="stylesheet" href="./assets/css/style.css">
+		  <script src="./assets/js/jquery-1.8.2.min.js" ></script>
+        <script src="./assets/js/supersized.3.2.7.min.js" ></script>
+        <script src="./assets/js/supersized-init.js" ></script>
+        <script src="./assets/js/scripts.js" ></script>
+
+
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <!--<script src="assets/js/html5.js"></script>-->
+        <!--<![endif]&ndash;&gt;-->
+
+    </head>
+    <script>
+	function myfunction()
+	{
+		var x=document.getElementById("username").value;
+		var y=document.getElementById("password").value;
+		var z=document.getElementById("password1").value;
+		if(x==""||y=="")
+		{
+			alert("用户名或密码不能为空")
+//			window.location.href="Homepage.html";
+		}
+		else if(y!=z)
+		{
+			alert("密码输入不统一")
+		}
+		else
+		{
+			<!--alert("注册成功")-->
+		    $.ajax({
+                url: "http://127.0.0.1:8080/Register", //加上这句话
+                // xhrFields: {
+                //    withCredentials: true
+                //},
+                //crossDomain: true,
+                type: 'POST',
+                async: false,
+                dataType: "text",
+                data: {
+                    "admin_id": $("#username").val(),
+                    "password": $("#password").val(),
+                },
+                success:function(data){
+					<!--alert(data);-->
+					<!--var x=JSON.parse(data);-->
+        			if (data==1){
+        			alert("注册成功");
+        			window.location.href="index.html";
+        			}
+        			else {
+        			alert("工号已存在");
+        			}
+        		}
+		    })
+		    <!--window.location.href="index.html";-->
+		}
+    }
+</script>
+
+    <body>
+
+        <div class="page-container">
+            <h1>教师注册</h1><!--<br />-->
+            <!--<h2 type="submit" aher=>管理员登陆</h2>-->
+            <form action="welcome/index.html" method="post">
+                <input type="text" name="username" id="username" class="username" placeholder="请输入工号">
+                <input type="password" name="password" id="password" placeholder="请输入密码">
+                <input type="password" name="password1" id="password1" placeholder="请输入再次密码">
+                <button type="button" class="submit_button" id="register" onclick="myfunction()">提交</button>
+                <div class="error"><span></span></div>
+            </form>          
+        </div>	
+    </body>
+
+</html>
+

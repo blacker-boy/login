@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"> 
+	<title>信息查询</title>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+<script>
+	function replace()
+	{
+		$.post({
+			url: "http://127.0.0.1:8080/Select", //加上这句话
+                // xhrFields: {
+                //    withCredentials: true
+                //},
+                //crossDomain: true,
+                type: 'POST',
+                async: false,
+                dataType: "text",
+			function(data){
+				alert("ok");
+				var data = JSON.parse(data);
+				<!--alert(data);-->
+				lenth=len(data);
+				for (var i = 0; i < lenth; i++) {
+                    str = `<tr>
+                        <td>` + data.body.data[i]['ID_admin']+ `</td>
+                        <td>` + data.body.data[i]['password']+`</td>
+                                    </tr>`
+                    tablebody.append(str);
+                }
+			}
+		})	
+	}
+	function Add_teacher(){
+        $.post("http://127.0.0.1:8080/AddTeacher", {
+                "tc_id": $("#tc_id").val(),
+                "tc_name": $("#tc_name").val(),
+                "tc_password": $("#tc_password").val(),
+                "tc_level": $("#tc_level").val()
+            },
+            function(data) {
+                var data = JSON.parse(data);
+                alert(data);
+                if (1) {
+                    $("#tc_id").val("");
+                    $("#tc_name").val("");
+                    $("#tc_password").val("");
+                    myFunction();
+                } else {
+                    alert('添加失败,可能是工号已存在');
+                }
+            }
+            )
+    };
+    function myFunction() {
+        $.ajax({
+                url: "http://127.0.0.1:8080/SelectTeacher", //加上这句话
+                // xhrFields: {
+                //    withCredentials: true
+                //},
+                //1crossDomain: true,
+                type: 'POST',
+                async: false,
+                dataType: "text",
+                data: {
+                    "tc_id": $("#tc_id").val(),
+                },
+                success:function(data){
+                      alert(data);
+                      var tablebody = $('#tablebody');
+                      <!--document.getElementById("tablebody").innerHTML = '';-->
+                      var data = JSON.parse(data);
+                      <!--alert(data.lenth);-->
+                      var str = '';
+                      for (var i=0;i<5;i++) {
+                          alert(data[i].tc_id);
+                          str = `<tr>
+                              <td>` + data[i].tc_id + `</td>
+                              <td>` + data[i].tc_name + `</td>
+                              <td>` + data[i].tc_password + `</td>
+                              <td>` + data[i].tc_level + `</td>
+                              <td><a class=` + data[i].tc_id + `>删除</a></td>
+                                          </tr>`
+                          tablebody.append(str);
+                      }
+                  }
+        })
+    };
+</script>
+
+
+<form class="form-horizontal" role="form">
+   <h3>添加教师</h3>
+	<div class="form-group">
+		<label for="tc_id" class="col-sm-2 control-label">工号</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="tc_id" 
+				   placeholder="请输入工号">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="tc_name" class="col-sm-2 control-label">姓名</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="tc_name"
+				   placeholder="请输入姓名">
+		</div>
+	</div>
+	<div class="form-group">
+		<label for="tc_password" class="col-sm-2 control-label">密码</label>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="tc_password"
+				   placeholder="请输入密码">
+		</div>
+	</div>
+	<div class="form-group">
+       <label class="col-sm-2 control-label">权限</label>
+       <div class="col-sm-10">
+          <select class="col-sm-10" id="tc_level">
+              <option value="教师">教师</option>
+              <option value="管理员">管理员</option> 
+          </select>
+       </div>
+   </div>
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit" class="btn btn-default" id="add_teacher" onclick="myFunction()">添加</button>
+		</div>
+	</div>
+</form>
+<table class="table">
+	<h3>教师信息</h3>
+   <thead>
+      <tr>
+         <th>工号</th>
+         <th>姓名</th>
+         <th>密码</th>
+         <th>类型</th>
+         <th>操作</th>
+      </tr>
+   </thead>
+   <!--<tbody>-->
+      <!--<tr>-->
+         <!--<td id="tc_id">1001</td>-->
+         <!--<td id="tc_name">魏强</td>-->
+         <!--<td id="tc_password">0001</td>-->
+         <!--<td id="tc_level">管理员</td>-->
+         <!--<td id="tc_operation">修改</td>-->
+      <!--</tr>-->
+    <tbody id="tablebody">
+    </tbody>
+   <!--</tbody>-->
+</table>
+</body>
+</html>
