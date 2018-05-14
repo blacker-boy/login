@@ -78,9 +78,12 @@
                       var tablebody = $('#tablebody');
                       document.getElementById("tablebody").innerHTML = '';
                       var data = JSON.parse(data);
-                      <!--alert(data.lenth);-->
+                      console.log(Object.keys(data));
+                      //Outputs: 3
+                      console.log(data.length);
+                      alert(data.length);
                       var str = '';
-                      for (var i=0;i<4;i++) {
+                      for (var i=0;i<data.length;i++) {
                           <!--alert(data[i].tc_id);-->
                           str = `<tr>
                               <td>` + data[i].tc_id + `</td>

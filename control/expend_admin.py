@@ -132,7 +132,7 @@ class SelectTeacher:
         # result=list(results)
         # print(type(results))
         # print("next")
-        print(jsonResults)
+        print(util.objtojson(jsonResults))
         return util.objtojson(jsonResults)
 # class SelectTeacher:
 #     def POST(self):
