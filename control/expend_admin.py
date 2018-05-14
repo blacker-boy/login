@@ -101,7 +101,7 @@ class SelectTeacher:
         # print(new_dict)
         result=json.dumps(results)
         print(type(result),result)
-        return result
+        # return result
         cursor.close()
         db.close()
         jsonResults=[]
