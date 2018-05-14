@@ -37,7 +37,7 @@
                 }
 			}
 		})	
-	}
+	};
 	function Add_teacher(){
         $.post("http://127.0.0.1:8080/AddTeacher", {
                 "tc_id": $("#tc_id").val(),
@@ -71,16 +71,17 @@
                 dataType: "text",
                 data: {
                     "tc_id": $("#tc_id").val(),
+                    "tc_name": $("#tc_name").val(),
                 },
                 success:function(data){
-                      alert(data);
+                      <!--alert(data);-->
                       var tablebody = $('#tablebody');
-                      <!--document.getElementById("tablebody").innerHTML = '';-->
+                      document.getElementById("tablebody").innerHTML = '';
                       var data = JSON.parse(data);
                       <!--alert(data.lenth);-->
                       var str = '';
-                      for (var i=0;i<5;i++) {
-                          alert(data[i].tc_id);
+                      for (var i=0;i<4;i++) {
+                          <!--alert(data[i].tc_id);-->
                           str = `<tr>
                               <td>` + data[i].tc_id + `</td>
                               <td>` + data[i].tc_name + `</td>
@@ -91,7 +92,8 @@
                           tablebody.append(str);
                       }
                   }
-        })
+        });
+        return false;
     };
 </script>
 
@@ -130,7 +132,7 @@
    </div>
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
-			<button type="submit" class="btn btn-default" id="add_teacher" onclick="myFunction()">添加</button>
+			<button class="btn btn-default" type="button" id="add_teacher" onclick="myFunction()">添加</button>
 		</div>
 	</div>
 </form>

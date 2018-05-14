@@ -2,7 +2,22 @@ import web
 import pymysql
 import os
 import json
-import model
+# import model
+import util
+import sys
+import os
+import shutil
+import imp
+
+# imp.reload(sys)
+# sys.setdefaultencoding("utf-8")
+
+sys.path.append('../')
+from config import configs
+from model import model
+import web
+import util
+from model.orm import *
 urls=(
     '/Adminlogin','Admin_Login',
     '/Register','Register',
@@ -118,7 +133,36 @@ class SelectTeacher:
         # print(type(results))
         # print("next")
         print(jsonResults)
-        return jsonResults
+        return util.objtojson(jsonResults)
+# class SelectTeacher:
+#     def POST(self):
+#         web.header("Access-Control-Allow-Origin", "*")
+#         # 接收参数
+#         params = web.input()
+#         # session = web.ctx.session
+#         count = model.Teacher_model.count()
+#         if params.tc_name == '' and params.tc_id == '':
+#             teacher = model.Teacher_model.query('select * from teacher ')
+#             teacher = [model.Teacher_model(**item) for item in teacher]
+#             print("teacher",teacher)
+#             page = util.Page(data=teacher, totalRow=count,
+#                              status=util.Status.__success__, message="未知")
+#             response = util.Response(status=util.Status.__success__, body=page)
+#             return util.objtojson(response)
+#         elif params.tc_name != '' and params.tc_id == '':
+#             teacher = model.Teacher_model.query('select * from teacher where tc_name ')
+#             teacher = [model.Teacher_model(**item) for item in teacher]
+#             page = util.Page(data=teacher, totalRow=teacher.__len__(),
+#                              status=util.Status.__success__, message="未知")
+#             response = util.Response(status=util.Status.__success__, body=page)
+#             return util.objtojson(response)
+#         else:
+#             teacher = model.Teacher_model.getByPK(params.tc_id)
+#             page = util.Page(data=teacher, totalRow=1),
+#                              status=util.Status.__success__, message="未知")
+#             response = util.Response(status=util.Status.__success__, body=page)
+#             print(response)
+#             return util.objtojson(response)
 class AddTeacher:
     def POST(self):
         params = web.input()
