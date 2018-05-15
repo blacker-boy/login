@@ -12,6 +12,9 @@
 </head>
 <body>
 <script>
+    $(document).ready(function(){
+       myFunction();
+    });
 	function replace()
 	{
 		$.post({
@@ -39,25 +42,35 @@
 		})	
 	};
 	function Add_teacher(){
-        $.post("http://127.0.0.1:8080/AddTeacher", {
-                "tc_id": $("#tc_id").val(),
-                "tc_name": $("#tc_name").val(),
-                "tc_password": $("#tc_password").val(),
-                "tc_level": $("#tc_level").val()
-            },
-            function(data) {
-                var data = JSON.parse(data);
-                alert(data);
-                if (1) {
-                    $("#tc_id").val("");
-                    $("#tc_name").val("");
-                    $("#tc_password").val("");
+	    var x=document.getElementById("tc_id").value;
+		var y=document.getElementById("tc_name").value;
+		var z=document.getElementById("tc_password").value;
+		if(x==""||y==""||z=="")
+		{
+			alert("信息均不能为空")
+		}
+		else{
+            $.post("http://127.0.0.1:8080/AddTeacher", {
+                    "tc_id": $("#tc_id").val(),
+                    "tc_name": $("#tc_name").val(),
+                    "tc_password": $("#tc_password").val(),
+                    "tc_level": $("#tc_level").val()
+                },
+                function(data) {
+                    <!--var data = JSON.parse(data);-->
+                    <!--alert(data);-->
+                    if (data==1) {
+                        $("#tc_id").val("");
+                        $("#tc_name").val("");
+                        $("#tc_password").val("");
+                        myFunction();
+                    } else {
+                        alert('添加失败,可能是工号已存在');
+                    }
                     myFunction();
-                } else {
-                    alert('添加失败,可能是工号已存在');
                 }
-            }
-            )
+                )
+        }
     };
     function myFunction() {
         $.ajax({
@@ -81,22 +94,67 @@
                       console.log(Object.keys(data));
                       //Outputs: 3
                       console.log(data.length);
-                      alert(data.length);
+                      <!--alert(data.length);-->
                       var str = '';
-                      for (var i=0;i<data.length;i++) {
-                          <!--alert(data[i].tc_id);-->
-                          str = `<tr>
+                      for(var i=0;i<data.length;i++){
+                          if(data[i].tc_level=="教师"){
+                              str = `<tr>
                               <td>` + data[i].tc_id + `</td>
                               <td>` + data[i].tc_name + `</td>
                               <td>` + data[i].tc_password + `</td>
                               <td>` + data[i].tc_level + `</td>
-                              <td><a class=` + data[i].tc_id + `>删除</a></td>
-                                          </tr>`
-                          tablebody.append(str);
+                              <td><a class=` + data[i].tc_id + ` onclick="delete_teacher(this)">删除 <a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="update_teacher(this)">修改</a></a></td>
+                              <!--<td><a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="delete_teacher(this)">修改</a></td>-->
+                              </tr>`
+                              tablebody.append(str);
+                              }
+                          else{
+                              str = `<tr>
+                              <td>` + data[i].tc_id + `</td>
+                              <td>` + data[i].tc_name + `</td>
+                              <td>` + data[i].tc_password + `</td>
+                              <td>` + data[i].tc_level + `</td>
+                              <td><a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="update_teacher(this)">修改</a></td>
+                              </tr>`
+                              tablebody.append(str);
+                          }
                       }
                   }
         });
         return false;
+    };
+    function update_teacher(obj) {
+        var text = window.prompt("修改信息：");
+        <!--alert($(obj).data.value);-->
+        <!--var r = confirm("确定修改?");-->
+        var thisObj=$(obj);//js对象转jquery对象
+        var tc_id=thisObj.data("tc_id");
+        if (r==true)
+        {
+                <!--alert(tc_id);-->
+                $.post("http://127.0.0.1:8080/UpdateTeacher", {
+                "tc_id": obj.tc_id,
+                },
+                    function(data) {
+                         myFunction();
+                    });
+        }
+    };
+    function delete_teacher(obj) {
+        alert(obj);
+        var r = confirm("确定删除?");
+        var thisObj=$(obj);//js对象转jquery对象
+        var tc_id=thisObj.data("tc_id");
+        if (r==true)
+        {
+                <!--alert(tc_id);-->
+                $.post("http://127.0.0.1:8080/DeleteTeacher", {
+                "tc_id": obj.tc_id,
+                },
+                    function(data) {
+                         myFunction();
+                    });
+        }
     };
 </script>
 
@@ -135,7 +193,7 @@
    </div>
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
-			<button class="btn btn-default" type="button" id="add_teacher" onclick="myFunction()">添加</button>
+			<button class="btn btn-default" type="button" id="add_teacher" onclick="Add_teacher()">添加</button>
 		</div>
 	</div>
 </form>
