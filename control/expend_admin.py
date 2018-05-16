@@ -34,7 +34,7 @@ class Admin_Login:
         # os.chdir('D:\PycharmProjects\login')
         os.chdir('../')
         # print(os.getcwd())
-        return web.seeother('/static/index.html',True)
+        return web.seeother('/static/welcome/text3.html',True)
     def POST(self):
         # print(5)
         params=web.input()
@@ -132,7 +132,7 @@ class SelectTeacher:
         # result=list(results)
         # print(type(results))
         # print("next")
-        # print(util.objtojson(jsonResults))
+        print(util.objtojson(jsonResults))
         return util.objtojson(jsonResults)
 class GetTeacher:#查询单条信息
     def POST(self):
@@ -217,10 +217,10 @@ class DeleteTeacher:
         # web.header("Access-Control-Allow-Origin", "*")
         # 接收参数
         params = web.input()
-        print("delete",params)
+        print("delete",params.tc_id)
         db = pymysql.connect("localhost", port=3306, user="admin", passwd="123456", db="examdb", charset='utf8')
         cursor = db.cursor()
-        sql = "delete from teacher where tc_id = '{}'" .format(params)
+        sql = "delete from teacher where tc_id = '{}'" .format(params.tc_id)
         try:
             # 执行SQL语句
             cursor.execute(sql)

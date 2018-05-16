@@ -3,14 +3,24 @@
 <head>
 	<meta charset="utf-8"> 
 	<title>信息查询</title>
-	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
-	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
-	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-	<link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">  
-	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
-	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/jquery.dataTables.css">
+	<!-- jQuery -->
+	<script type="text/javascript" charset="utf8" src="js/jquery-1.10.2.min.js"></script>
+	<!-- DataTables -->
+	<script type="text/javascript" charset="utf8" src="js/jquery.dataTables.js"></script>
+	<script src="js/handlebars-v3.0.1.js"></script>
 </head>
 <body>
+<script id="tpl" type="text/x-handlebars-template">
+	{{#each func}}
+	<button type="button" class="btn btn-{{this.type}} btn-sm" onclick="{{this.fn}}">{{this.name}}</button> {{/each}}
+</script>
 <script>
     $(document).ready(function(){
        myFunction();
@@ -73,59 +83,177 @@
         }
     };
     function myFunction() {
-        $.ajax({
-                url: "http://127.0.0.1:8080/SelectTeacher", //加上这句话
-                // xhrFields: {
-                //    withCredentials: true
-                //},
-                //1crossDomain: true,
-                type: 'POST',
-                async: false,
-                dataType: "text",
-                data: {
-                    "tc_id": $("#tc_id").val(),
-                    "tc_name": $("#tc_name").val(),
-                },
-                success:function(data){
-                      <!--alert(data);-->
-                      var tablebody = $('#tablebody');
-                      document.getElementById("tablebody").innerHTML = '';
-                      var data = JSON.parse(data);
-                      console.log(Object.keys(data));
-                      //Outputs: 3
-                      console.log(data.length);
+	var Table;
+	//按钮模板
+	var tpl = $("#tpl").html();
+	//预编译模板
+	var template = Handlebars.compile(tpl);
+	$.ajax({
+		url: "http://127.0.0.1:8080/SelectTeacher", //加上这句话
+		// xhrFields: {
+		//    withCredentials: true
+		//},
+		//1crossDomain: true,
+		type: 'POST',
+		async: false,
+		dataType: "text",
+		data: {
+			"tc_id": $("#tc_id").val(),
+			"tc_name": $("#tc_name").val(),
+		},
+		success: function(data) {
+			var data = JSON.parse(data);
+			<!--alert(data[1].tc_id);-->
+			console.log(Object.keys(data));
+			//Outputs: 3
+			console.log(data.length);
+			<!--alert(data.length);-->
+			for (var i = 0; i < data.length; i++) {
+				if (1) {
+					<!--alert("管理员");-->
+					$('#table').dataTable().fnClearTable(); //清空数据.fnClearTable();//清空数据
+					$('#table').dataTable().fnDestroy(); //还原初始化了的datatable
+					Table = $('#table').DataTable({
+						data: data,
+						retrieve: true,
+						columns: [{
+								data: 'tc_id'
+							}, {
+								data: 'tc_name'
+							}, {
+								data: 'tc_password'
+							}, {
+								data: 'tc_level'
+							},
+							<!--{ data: null},-->
+							{
+								"targets": -1,
+								"render": function(data, type, row, meta) {
+									if (row.tc_level == "管理员") {
+										var context = {
+											func: [{
+												"name": "修改",
+												"fn": "update_teacher(\'" + row.tc_id + "\')",
+												"type": "primary",
+											}, ]
+										};
+
+									} else {
+										var context = {
+											func: [{
+												"name": "修改",
+												"fn": "update_teacher(\'" + row.tc_id + "\')",
+												"type": "primary",
+											}, {
+												"name": "删除",
+												"fn": "delete_teacher(\'" + row.tc_name + "\',\'" + row.tc_id + "\')",
+												"type": "danger",
+											}]
+										};
+									}
+									var html = template(context);
+									return html;
+								}
+							}
+						]
+					});
+				} else {
+					<!--alert("教师");-->
+					$('#table').DataTable({
+						data: data,
+						retrieve: true,
+						columns: [{
+								data: 'tc_id'
+							}, {
+								data: 'tc_name'
+							}, {
+								data: 'tc_password'
+							}, {
+								data: 'tc_level'
+							},
+							<!--{ data: null},-->
+							{
+								"targets": -1,
+								"render": function(data, type, row, meta) {
+									var context = {
+										func: [{
+											"name": "修改",
+											"fn": "update_teacher(\'" + row.tc_id + "\')",
+											"type": "primary",
+										}, {
+											"name": "删除",
+											"fn": "delete_teacher(\'" + row.tc_name + "\',\'" + row.tc_id + "\')",
+											"type": "danger",
+										}]
+									};
+									var html = template(context);
+									return html;
+								}
+							}
+						]
+					});
+				}
+			}
+
+		}
+	});
+};
+
+    <!--function myFunction() {-->   #手动绘制表格
+        <!--$.ajax({-->
+                <!--url: "http://127.0.0.1:8080/SelectTeacher", //加上这句话-->
+                <!--// xhrFields: {-->
+                <!--//    withCredentials: true-->
+                <!--//},-->
+                <!--//1crossDomain: true,-->
+                <!--type: 'POST',-->
+                <!--async: false,-->
+                <!--dataType: "text",-->
+                <!--data: {-->
+                    <!--"tc_id": $("#tc_id").val(),-->
+                    <!--"tc_name": $("#tc_name").val(),-->
+                <!--},-->
+                <!--success:function(data){-->
+                      <!--&lt;!&ndash;alert(data);&ndash;&gt;-->
+                      <!--var tablebody = $('#tablebody');-->
+                      <!--document.getElementById("tablebody").innerHTML = '';-->
+                      <!--var data = JSON.parse(data);-->
+                      <!--console.log(Object.keys(data));-->
+                      <!--//Outputs: 3-->
+                      <!--console.log(data.length);-->
                       <!--alert(data.length);-->
-                      var str = '';
-                      for(var i=0;i<data.length;i++){
-                          if(data[i].tc_level=="教师"){
-                              str = `<tr>
-                              <td>` + data[i].tc_id + `</td>
-                              <td>` + data[i].tc_name + `</td>
-                              <td>` + data[i].tc_password + `</td>
-                              <td>` + data[i].tc_level + `</td>
-                              <td><a class=` + data[i].tc_id + ` onclick="delete_teacher(this)">删除 <a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="update_teacher(this)">修改</a></a></td>
-                              <!--<td><a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="delete_teacher(this)">修改</a></td>-->
-                              </tr>`
-                              tablebody.append(str);
-                              }
-                          else{
-                              str = `<tr>
-                              <td>` + data[i].tc_id + `</td>
-                              <td>` + data[i].tc_name + `</td>
-                              <td>` + data[i].tc_password + `</td>
-                              <td>` + data[i].tc_level + `</td>
-                              <td><a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="update_teacher(this)">修改</a></td>
-                              </tr>`
-                              tablebody.append(str);
-                          }
-                      }
-                  }
-        });
-        return false;
-    };
+                      <!--var str = '';-->
+                      <!--for(var i=0;i<data.length;i++){-->
+                          <!--if(data[i].tc_level=="教师"){-->
+                              <!--str = `<tr>-->
+                              <!--<td>` + data[i].tc_id + `</td>-->
+                              <!--<td>` + data[i].tc_name + `</td>-->
+                              <!--<td>` + data[i].tc_password + `</td>-->
+                              <!--<td>` + data[i].tc_level + `</td>-->
+                              <!--<td><a class=` + data[i].tc_id + ` onclick="delete_teacher(this)">删除 <a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="update_teacher(this)">修改</a></a></td>-->
+                              <!--&lt;!&ndash;<td><a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="delete_teacher(this)">修改</a></td>&ndash;&gt;-->
+                              <!--</tr>`-->
+                              <!--tablebody.append(str);-->
+                              <!--}-->
+                          <!--else{-->
+                              <!--str = `<tr>-->
+                              <!--<td>` + data[i].tc_id + `</td>-->
+                              <!--<td>` + data[i].tc_name + `</td>-->
+                              <!--<td>` + data[i].tc_password + `</td>-->
+                              <!--<td>` + data[i].tc_level + `</td>-->
+                              <!--<td><a href="javascript:void(0);" class=` + data[i].tc_id + ` onclick="update_teacher(this)">修改</a></td>-->
+                              <!--</tr>`-->
+                              <!--tablebody.append(str);-->
+                          <!--}-->
+                      <!--}-->
+                  <!--}-->
+        <!--});-->
+        <!--return false;-->
+    <!--};-->
     function update_teacher(obj) {
+        var obj="${obj}"
+
         var text = window.prompt("修改信息：");
-        <!--alert($(obj).data.value);-->
         <!--var r = confirm("确定修改?");-->
         var thisObj=$(obj);//js对象转jquery对象
         var tc_id=thisObj.data("tc_id");
@@ -140,18 +268,19 @@
                     });
         }
     };
-    function delete_teacher(obj) {
-        alert(obj);
-        var r = confirm("确定删除?");
-        var thisObj=$(obj);//js对象转jquery对象
-        var tc_id=thisObj.data("tc_id");
+    function delete_teacher(tc_name,tc_id) {
+        <!--alert(tc_name+tc_id);-->
+        var r = confirm("确定删除:"+tc_name);
+        <!--var thisObj=$(obj);//js对象转jquery对象-->
+        <!--var tc_id=thisObj.data("tc_id");-->
         if (r==true)
         {
                 <!--alert(tc_id);-->
                 $.post("http://127.0.0.1:8080/DeleteTeacher", {
-                "tc_id": obj.tc_id,
+                "tc_id": tc_id,
                 },
                     function(data) {
+                         alert("删除后：");
                          myFunction();
                     });
         }
@@ -197,7 +326,7 @@
 		</div>
 	</div>
 </form>
-<table class="table">
+<table id="table" class="display">
 	<h3>教师信息</h3>
    <thead>
       <tr>
